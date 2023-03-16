@@ -10,9 +10,10 @@ import br.com.chssoftware.world.World;
 
 public class Enemy extends Entity {
 
-	private double speed = 1;
+	private double speed = 0;
 	private int maskx = 8, masky = 8, maskw = 10, maskh = 10;
 	private int frames = 0, maxFrames = 20, index = 0, maxIndex = 1;
+	private int life = 3;
 
 	private BufferedImage[] sprites;
 
@@ -57,12 +58,36 @@ public class Enemy extends Entity {
 				index = 0;
 			}
 		}
+		
+		if (life <= 0) {
+			destroySelf();
+			return;
+		}
+		
+		collidingBullet();
+	}
+	
+	public void destroySelf() {
+		Game.entities.remove(this);
+		Game.enemies.remove(this);
 	}
 
+	public void collidingBullet() {
+		for (int i = 0; i < Game.bullets.size(); i++) {
+			BulletShoot bulletShoot = Game.bullets.get(i);
+			if (Entity.isColliding(bulletShoot, this)) {
+				life--;
+				Game.bullets.remove(bulletShoot);
+				return;
+			}
+		}
+	}
+	
 	public boolean isCollidingWithPlayer() {
 		Rectangle enemyCurrent = new Rectangle(this.getX() + maskx, this.getY() + masky, maskw, maskh);
 		Player gamePlayer = Game.player;
-		Rectangle player = new Rectangle(gamePlayer.getX(), gamePlayer.getY(), gamePlayer.getWidth(), gamePlayer.getHeight());
+		Rectangle player = new Rectangle(gamePlayer.getX(), gamePlayer.getY(), gamePlayer.getWidth(),
+				gamePlayer.getHeight());
 		return enemyCurrent.intersects(player);
 	}
 

@@ -14,7 +14,7 @@ public class Player extends Entity {
 	private boolean up, left, down, right;
 	private int right_dir = 0, left_dir = 1, up_dir = 2, down_dir = 3;
 	private int dir = right_dir;
-	private double speed = 1.5;
+	private double speed = 2.0;
 	// ------------------------
 	private double life = 100;
 	private double maxLife = 100;
@@ -24,6 +24,8 @@ public class Player extends Entity {
 	private int damagedFrames = 0;
 	private boolean hasGun = false;
 	private boolean shoot = false;
+	private boolean mouseShoot = false;
+	private int mx, my;
 
 	private int frames = 0, maxFrames = 10, index = 0, maxIndex = 3;
 	private boolean moved = false;
@@ -90,33 +92,66 @@ public class Player extends Entity {
 
 		}
 		// Sistema de tiro
-		if (shoot && hasGun && (ammo > 0)) {
+		if (shoot) {
 			// Criar Bala e atirar
 			shoot = false;
-			ammo--;
-			int dx = 0;
-			int dy = 0;
-			int px = 0;
-			int py = 0;
-			if (dir == right_dir) {
-				dx = 1;
-				px = 17;
-				py = 6;
-			} else if (dir == up_dir) {
-				dx = 1;
-				px = 17;
-				py = 6;
-			} else if (dir == down_dir) {
-				dx = 1;
-				px = 17;
-				py = 6;
-			} else {
-				dx = -1;
-				px = -5;
-				py = 6;
+			if (hasGun && (ammo > 0)) {
+				ammo--;
+				int dx = 0;
+				int dy = 0;
+				int px = 0;
+				int py = 0;
+				if (dir == right_dir) {
+					dx = 1;
+					px = 17;
+					py = 6;
+				} else if (dir == up_dir) {
+					dx = 1;
+					px = 17;
+					py = 6;
+				} else if (dir == down_dir) {
+					dx = 1;
+					px = 17;
+					py = 6;
+				} else {
+					dx = -1;
+					px = -5;
+					py = 6;
+				}
+				BulletShoot bulletShoot = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
+				Game.bullets.add(bulletShoot);
 			}
-			BulletShoot bulletShoot = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
-			Game.bullets.add(bulletShoot);
+		}
+		if (mouseShoot) {
+			mouseShoot = false;
+			if (hasGun && (ammo > 0)) {
+				ammo--;
+				double angle = 0;
+				System.out.println(Math.toDegrees(angle));
+				int px = 0;
+				int py = 0;
+				if (dir == right_dir) {
+					px = 20;
+					py = 6;
+					angle = Math.atan2(my - (this.getY() + py - Camera.y), mx - (this.getX() + px - Camera.x));
+				} else if (dir == up_dir) {
+					px = 20;
+					py = 6;
+					angle = Math.atan2(my - (this.getY() + py - Camera.y), mx - (this.getX() + px - Camera.x));
+				} else if (dir == down_dir) {
+					px = 20;
+					py = 6;
+					angle = Math.atan2(my - (this.getY() + py - Camera.y), mx - (this.getX() + px - Camera.x));
+				} else {
+					px = -8;
+					py = 6;
+					angle = Math.atan2(my - (this.getY() + py - Camera.y), mx - (this.getX() + px - Camera.x));
+				}
+				double dx = Math.cos(angle);
+				double dy = Math.sin(angle);
+				BulletShoot bulletShoot = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
+				Game.bullets.add(bulletShoot);
+			}
 		}
 
 		if (life <= 0) {
@@ -275,11 +310,28 @@ public class Player extends Entity {
 		this.shoot = shoot;
 	}
 
-	public boolean isMoved() {
-		return moved;
+	public boolean isMouseShoot() {
+		return mouseShoot;
 	}
 
-	public void setMoved(boolean moved) {
-		this.moved = moved;
+	public void setMouseShoot(boolean mouseShoot) {
+		this.mouseShoot = mouseShoot;
 	}
+
+	public int getMx() {
+		return mx;
+	}
+
+	public void setMx(int mx) {
+		this.mx = mx;
+	}
+
+	public int getMy() {
+		return my;
+	}
+
+	public void setMy(int my) {
+		this.my = my;
+	}
+
 }

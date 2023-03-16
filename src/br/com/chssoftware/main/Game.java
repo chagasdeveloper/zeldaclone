@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ import br.com.chssoftware.graphics.Spritesheet;
 import br.com.chssoftware.graphics.UI;
 import br.com.chssoftware.world.World;
 
-public class Game extends Canvas implements Runnable, KeyListener {
+public class Game extends Canvas implements Runnable, KeyListener, MouseListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -49,6 +51,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 	public Game() {
 		rand = new Random();
 		this.addKeyListener(this);
+		this.addMouseListener(this);
 		setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		initFrame();
 		// Inicializando os objetos
@@ -208,6 +211,34 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		if (code == KeyEvent.VK_X) {
 			player.setShoot(false);
 		}
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		player.setMouseShoot(true);
+		player.setMx((e.getX() / 3));
+		player.setMy((e.getY() / 3));
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
 
 	}
 }
