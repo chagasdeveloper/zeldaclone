@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -32,7 +33,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	public static JFrame frame;
 	public static final int WIDTH = 240;
 	public static final int HEIGHT = 160;
-	public final int SCALE = 3;
+	public static final int SCALE = 3;
 	private Thread thread;
 	private boolean isRunning = true;
 	private BufferedImage image;
@@ -45,9 +46,13 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	public static Player player;
 	public static World world;
 	public UI ui;
-	private static int CUR_LEVEL = 1, MAX_LEVEL = 2;
-
+	private int CUR_LEVEL = 1, MAX_LEVEL = 2;
+	public static String gameState = "MENU";
+	private boolean showMessageGameOver = true;
+	private int framesGameOver = 0;
+	private boolean restartGame = false;
 	public static Random rand;
+	public Menu menu;
 
 	public Game() {
 		rand = new Random();
@@ -65,7 +70,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		player = new Player(120, 80, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
 		entities.add(player);
 		world = new World("/level1.png");
-
+		menu = new Menu();
 	}
 
 	public static void main(String[] args) {
@@ -99,20 +104,40 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	}
 
 	public void tick() {
-		for (int i = 0; i < entities.size(); i++) {
-			Entity e = entities.get(i);
-			e.tick();
-		}
-		for (int i = 0; i < bullets.size(); i++) {
-			bullets.get(i).tick();
-		}
-		if (enemies.size() == 0) {
-			// Avançar para proóximo level
-			CUR_LEVEL++;
-			if (CUR_LEVEL > MAX_LEVEL) {
-				CUR_LEVEL = 1;
+		if (gameState == "NORMAL") {
+			for (int i = 0; i < entities.size(); i++) {
+				Entity e = entities.get(i);
+				e.tick();
 			}
-			World.restartGame("level" + CUR_LEVEL + ".png");
+			for (int i = 0; i < bullets.size(); i++) {
+				bullets.get(i).tick();
+			}
+			if (enemies.size() == 0) {
+				// Avançar para proóximo level
+				CUR_LEVEL++;
+				if (CUR_LEVEL > MAX_LEVEL) {
+					CUR_LEVEL = 1;
+				}
+				World.restartGame("level" + CUR_LEVEL + ".png");
+			}
+		} else if (gameState == "GAME_OVER") {
+			framesGameOver++;
+			if (framesGameOver == 15) {
+				framesGameOver = 0;
+				if (showMessageGameOver) {
+					showMessageGameOver = false;
+				} else {
+					showMessageGameOver = true;
+				}
+			}
+			if (restartGame) {
+				this.restartGame = false;
+				gameState = "NORMAL";
+				CUR_LEVEL = 1;
+				World.restartGame("level" + CUR_LEVEL + ".png");
+			}
+		} else if (gameState == "MENU") {
+			menu.tick();
 		}
 	}
 
@@ -147,6 +172,20 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		g.setColor(Color.white);
 		g.setFont(new Font("arial black", Font.BOLD, 18));
 		g.drawString((int) player.getLife() + "/" + (int) player.getMaxLife(), 80, 18);
+		if (gameState == "GAME_OVER") {
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setColor(new Color(0, 0, 0, 191));
+			g2.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+			g.setColor(Color.red);
+			g.setFont(new Font("arial", Font.BOLD, 36));
+			g.drawString("Game Over", (WIDTH * SCALE) / 2 - 50, (HEIGHT * SCALE) / 2 - 20);
+			g.setFont(new Font("arial", Font.BOLD, 32));
+			if (showMessageGameOver) {
+				g.drawString(">Pressione Enter para reiniciar<", (WIDTH * SCALE) / 2 - 200, (HEIGHT * SCALE) / 2 + 40);
+			}
+		} else if (gameState == "MENU") {
+			menu.render(g);
+		}
 		bs.show();
 
 	}
@@ -196,11 +235,20 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		}
 		if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
 			player.setUp(true);
+			if (gameState == "MENU") {
+				menu.setUp(true);
+			}
 		} else if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) {
 			player.setDown(true);
+			if (gameState == "MENU") {
+				menu.setDown(true);
+			}
 		}
 		if (code == KeyEvent.VK_X) {
 			player.setShoot(true);
+		}
+		if (code == KeyEvent.VK_ENTER) {
+			this.restartGame = true;
 		}
 	}
 

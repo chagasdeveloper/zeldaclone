@@ -42,10 +42,10 @@ public class Enemy extends Entity {
 			}
 		} else {
 			if (Game.rand.nextInt(100) < 10) {
+				Game.player.setDamaged(true);
 				double life = Game.player.getLife();
 				life -= Game.rand.nextInt(3);
 				Game.player.setLife(life);
-				Game.player.setDamaged(true);
 			}
 		}
 		// Dinâmica de troca das sprites do Enemy
