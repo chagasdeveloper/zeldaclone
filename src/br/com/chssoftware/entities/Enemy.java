@@ -10,19 +10,18 @@ import br.com.chssoftware.world.World;
 
 public class Enemy extends Entity {
 
-	private double speed = 0;
+	private double speed = 0.9;
 	private int maskx = 8, masky = 8, maskw = 10, maskh = 10;
 	private int frames = 0, maxFrames = 20, index = 0, maxIndex = 1;
 	private int life = 3;
+	private boolean isDamaged = false;
+	private int damagedFrames = 10, damagedCurrent = 0;
 
 	private BufferedImage[] sprites;
 
-	public Enemy(int x, int y, int width, int height, BufferedImage sprite) {
-		super(x, y, width, height, sprite);
-		sprites = new BufferedImage[2];
-		for (int i = 0; i < sprites.length; i++) {
-			sprites[i] = Game.spritesheet.getSprite(112 + (i * 16), 16, width, height);
-		}
+	public Enemy(int x, int y, int width, int height, BufferedImage[] sprites) {
+		super(x, y, width, height, null);
+		this.sprites = sprites;
 	}
 
 	public void tick() {
@@ -58,15 +57,22 @@ public class Enemy extends Entity {
 				index = 0;
 			}
 		}
-		
+		// tempo da Sprite de dano
+		if (isDamaged) {
+			damagedCurrent++;
+			if (damagedCurrent == damagedFrames) {
+				isDamaged = false;
+				damagedCurrent = 0;
+			}
+		}
+
 		if (life <= 0) {
 			destroySelf();
 			return;
 		}
-		
 		collidingBullet();
 	}
-	
+
 	public void destroySelf() {
 		Game.entities.remove(this);
 		Game.enemies.remove(this);
@@ -77,12 +83,13 @@ public class Enemy extends Entity {
 			BulletShoot bulletShoot = Game.bullets.get(i);
 			if (Entity.isColliding(bulletShoot, this)) {
 				life--;
+				isDamaged = true;
 				Game.bullets.remove(bulletShoot);
 				return;
 			}
 		}
 	}
-	
+
 	public boolean isCollidingWithPlayer() {
 		Rectangle enemyCurrent = new Rectangle(this.getX() + maskx, this.getY() + masky, maskw, maskh);
 		Player gamePlayer = Game.player;
@@ -107,8 +114,11 @@ public class Enemy extends Entity {
 	}
 
 	public void render(Graphics g) {
-		super.render(g);
-		g.drawImage(sprites[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
+		if (!isDamaged) {
+			g.drawImage(sprites[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
+		} else {
+			g.drawImage(Entity.ENEMY_FEEDBACK, this.getX() - Camera.x, this.getY() - Camera.y, null);
+		}
 //		g.setColor(Color.blue);
 //		g.fillRect(this.getX() - Camera.x, this.getY() - Camera.y, this.width, this.height);
 	}

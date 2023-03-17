@@ -3,6 +3,7 @@ package br.com.chssoftware.world;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -10,7 +11,9 @@ import br.com.chssoftware.entities.Bullet;
 import br.com.chssoftware.entities.Enemy;
 import br.com.chssoftware.entities.Entity;
 import br.com.chssoftware.entities.Lifepack;
+import br.com.chssoftware.entities.Player;
 import br.com.chssoftware.entities.Weapon;
+import br.com.chssoftware.graphics.Spritesheet;
 import br.com.chssoftware.main.Game;
 
 public class World {
@@ -24,10 +27,10 @@ public class World {
 			// Imagem contendo o mapa.
 			BufferedImage map = ImageIO.read(getClass().getResource(path));
 			// vetor contendo todos os pixels.
-			int[] pixels = new int[map.getWidth() * map.getHeight()]; // 0 - 399
+			int[] pixels = new int[map.getWidth() * map.getHeight()]; // 0 - 399 (level 1)
 			// Largura e altura do mapa
-			WIDTH = map.getWidth(); // 20
-			HEIGHT = map.getHeight(); // 20
+			WIDTH = map.getWidth(); // 20 (level 1)
+			HEIGHT = map.getHeight(); // 20 (level 1)
 			// todos os Tiles contidos no mapa
 			tiles = new Tile[map.getWidth() * map.getHeight()]; // 0 - 399
 			map.getRGB(0, 0, map.getWidth(), map.getHeight(), pixels, 0, map.getWidth());
@@ -58,7 +61,10 @@ public class World {
 						Game.entities.add(new Lifepack(xx * TILE_SIZE, yy * TILE_SIZE, 16, 16, Entity.LIFEPACK_EN));
 					} else if (pixelAtual == 0xFFFF0000) {
 						// Enemy
-						Enemy enemy = new Enemy(xx * TILE_SIZE, yy * TILE_SIZE, 16, 16, null);
+						 BufferedImage[] sprites = new BufferedImage[2];
+						 sprites[0] = Entity.ENEMY_EN;
+						 sprites[1] = Entity.ENEMY_EN2;
+						Enemy enemy = new Enemy(xx * TILE_SIZE, yy * TILE_SIZE, 16, 16, sprites);
 						Game.entities.add(enemy);
 						Game.enemies.add(enemy);
 					} else if (pixelAtual == 0xFFFF6A00) {
@@ -70,6 +76,18 @@ public class World {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void restartGame(String level) {
+		Game.entities.clear();
+		Game.enemies.clear();
+		Game.entities = new ArrayList<>();
+		Game.enemies = new ArrayList<>();
+		Game.spritesheet = new Spritesheet("/spritesheet.png");
+		Game.player = new Player(120, 80, 16, 16, Game.spritesheet.getSprite(32, 0, 16, 16));
+		Game.entities.add(Game.player);
+		Game.world = new World("/" + level);
+		return;
 	}
 
 	public static boolean isFree(int xnext, int ynext) {

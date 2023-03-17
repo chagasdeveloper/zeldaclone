@@ -2,9 +2,7 @@ package br.com.chssoftware.entities;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
-import br.com.chssoftware.graphics.Spritesheet;
 import br.com.chssoftware.main.Game;
 import br.com.chssoftware.world.Camera;
 import br.com.chssoftware.world.World;
@@ -52,6 +50,7 @@ public class Player extends Entity {
 	}
 
 	public void tick() {
+		// Movimentação
 		moved = false;
 		if (isRight() && World.isFree((int) (x + speed), this.getY())) {
 			moved = true;
@@ -71,7 +70,7 @@ public class Player extends Entity {
 			dir = down_dir;
 			y += speed;
 		}
-
+		// Troca de sprites normais
 		if (moved) {
 			frames++;
 			if (frames == maxFrames) {
@@ -82,16 +81,15 @@ public class Player extends Entity {
 				}
 			}
 		}
-		checkCollision();
+		// tempo sprite de dano
 		if (isDamaged) {
 			damagedFrames++;
 			if (damagedFrames == 8) {
 				damagedFrames = 0;
 				isDamaged = false;
 			}
-
 		}
-		// Sistema de tiro
+		// Sistema de tiro com teclado
 		if (shoot) {
 			// Criar Bala e atirar
 			shoot = false;
@@ -122,12 +120,12 @@ public class Player extends Entity {
 				Game.bullets.add(bulletShoot);
 			}
 		}
+		// Sistema de tiro com mouse
 		if (mouseShoot) {
 			mouseShoot = false;
 			if (hasGun && (ammo > 0)) {
 				ammo--;
 				double angle = 0;
-				System.out.println(Math.toDegrees(angle));
 				int px = 0;
 				int py = 0;
 				if (dir == right_dir) {
@@ -153,22 +151,12 @@ public class Player extends Entity {
 				Game.bullets.add(bulletShoot);
 			}
 		}
-
 		if (life <= 0) {
-			Game.entities.clear();
-			Game.enemies.clear();
-			Game.entities = new ArrayList<>();
-			Game.enemies = new ArrayList<>();
-			Game.spritesheet = new Spritesheet("/spritesheet.png");
-			Game.player = new Player(120, 80, 16, 16, Game.spritesheet.getSprite(32, 0, 16, 16));
-			Game.entities.add(Game.player);
-			Game.world = new World("/map.png");
-			return;
+			World.restartGame("level1.png");
 		}
-
-		checkCollision();
 		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 16 - Game.WIDTH);
 		Camera.y = Camera.clamp(this.getY() - (Game.HEIGHT / 2), 0, World.HEIGHT * 16 - Game.HEIGHT);
+		checkCollision();
 	}
 
 	public void checkCollision() {
