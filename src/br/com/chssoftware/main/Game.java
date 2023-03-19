@@ -55,6 +55,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	public Menu menu;
 
 	public Game() {
+		//Sound.musicBackground.loop();
 		rand = new Random();
 		this.addKeyListener(this);
 		this.addMouseListener(this);
@@ -161,7 +162,6 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 			bullets.get(i).render(g);
 		}
 		ui.render(g);
-		//
 		g.dispose();
 		g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null);
@@ -248,7 +248,18 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 			player.setShoot(true);
 		}
 		if (code == KeyEvent.VK_ENTER) {
-			this.restartGame = true;
+			if (gameState == "GAME_OVER") {
+				this.restartGame = true;
+			}
+			if (gameState == "MENU") {
+				menu.setEnter(true);
+			}
+		}
+		if (code == KeyEvent.VK_ESCAPE) {
+			if (gameState == "NORMAL") {
+				gameState = "MENU";
+				menu.setPause(true);
+			}
 		}
 	}
 

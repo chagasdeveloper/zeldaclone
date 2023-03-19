@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import br.com.chssoftware.main.Game;
+import br.com.chssoftware.main.Sound;
 import br.com.chssoftware.world.Camera;
 import br.com.chssoftware.world.World;
 
@@ -42,6 +43,7 @@ public class Enemy extends Entity {
 			}
 		} else {
 			if (Game.rand.nextInt(100) < 10) {
+				Sound.hurtEffect.play();
 				Game.player.setDamaged(true);
 				double life = Game.player.getLife();
 				life -= Game.rand.nextInt(3);
@@ -74,6 +76,7 @@ public class Enemy extends Entity {
 	}
 
 	public void destroySelf() {
+		Sound.explosion.play();
 		Game.entities.remove(this);
 		Game.enemies.remove(this);
 	}
@@ -82,6 +85,7 @@ public class Enemy extends Entity {
 		for (int i = 0; i < Game.bullets.size(); i++) {
 			BulletShoot bulletShoot = Game.bullets.get(i);
 			if (Entity.isColliding(bulletShoot, this)) {
+				Sound.shootEnemy.play();
 				life--;
 				isDamaged = true;
 				Game.bullets.remove(bulletShoot);

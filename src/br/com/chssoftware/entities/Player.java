@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import br.com.chssoftware.main.Game;
+import br.com.chssoftware.main.Sound;
 import br.com.chssoftware.world.Camera;
 import br.com.chssoftware.world.World;
 
@@ -91,6 +92,7 @@ public class Player extends Entity {
 		}
 		// Sistema de tiro com teclado
 		if (shoot) {
+			Sound.laserShoot.play();
 			shoot = false;
 			if (hasGun && (ammo > 0)) {
 				ammo--;
@@ -121,6 +123,7 @@ public class Player extends Entity {
 		}
 		// Sistema de tiro com mouse
 		if (mouseShoot) {
+			Sound.laserShoot.play();
 			mouseShoot = false;
 			if (hasGun && (ammo > 0)) {
 				ammo--;
@@ -160,6 +163,7 @@ public class Player extends Entity {
 		checkCollision();
 	}
 
+	// Verifica colisão com os coletáveis
 	public void checkCollision() {
 		for (int i = 0; i < Game.entities.size(); i++) {
 			Entity atual = Game.entities.get(i);
@@ -171,6 +175,7 @@ public class Player extends Entity {
 						if (life > 100) {
 							life = 100;
 						}
+						Sound.lifePlus.play();
 						Game.entities.remove(atual);
 					}
 				}
@@ -178,12 +183,14 @@ public class Player extends Entity {
 			} else if (atual instanceof Bullet) {
 				if (Entity.isColliding(this, atual)) {
 					ammo += 10;
+					Sound.bulletPlus.play();
 					Game.entities.remove(atual);
 				}
 				// Weapon
 			} else if (atual instanceof Weapon) {
 				if (Entity.isColliding(this, atual)) {
 					hasGun = true;
+					Sound.weaponPlus.play();
 					Game.entities.remove(atual);
 				}
 			}
@@ -218,7 +225,7 @@ public class Player extends Entity {
 			if (hasGun) {
 				if (dir == right_dir) {
 					g.drawImage(Entity.GUN_DAMAGE_RIGHT, this.getX() + 8 - Camera.x, this.getY() + 2 - Camera.y, null);
-				} else if (dir == left_dir){
+				} else if (dir == left_dir) {
 					g.drawImage(Entity.GUN_DAMAGE_LEFT, this.getX() - 8 - Camera.x, this.getY() + 2 - Camera.y, null);
 				} else if (dir == up_dir) {
 					g.drawImage(Entity.GUN_DAMAGE_UP, this.getX() + 6 - Camera.x, this.getY() + 2 - Camera.y, null);
