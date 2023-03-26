@@ -5,8 +5,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import br.com.chssoftware.world.World;
+
 public class Menu {
-	private String[] options = { "novo jogo", "carregar jogo", "sair" };
+	private String[] options = { "continuar", "novo jogo", "carregar jogo", "sair" };
 	private boolean up;
 	private boolean down;
 	private boolean enter;
@@ -15,27 +17,54 @@ public class Menu {
 	private int maxOption = options.length - 1;
 
 	public void tick() {
-		if (up) {
-			up = false;
-			currentOption--;
-			Sound.selectMenu.play();
-			if (currentOption < 0) {
-				currentOption = maxOption;
+		if (pause) {
+			if (up) {
+				Sound.selectMenu.play();
+				up = false;
+				currentOption--;
+				if (currentOption < 0) {
+					currentOption = maxOption;
+				}
 			}
-		}
-		if (down) {
-			down = false;
-			Sound.selectMenu.play();
-			currentOption++;
-			if (currentOption > maxOption) {
-				currentOption = 0;
+			if (down) {
+				Sound.selectMenu.play();
+				down = false;
+				currentOption++;
+				if (currentOption > maxOption) {
+					currentOption = 0;
+				}
+			}
+		} else {
+			if (currentOption == 0) {
+				currentOption = 1;
+			}
+			if (up) {
+				Sound.selectMenu.play();
+				up = false;
+				currentOption--;
+				if (currentOption < 1) {
+					currentOption = maxOption;
+				}
+			}
+			if (down) {
+				Sound.selectMenu.play();
+				down = false;
+				currentOption++;
+				if (currentOption > maxOption) {
+					currentOption = 1;
+				}
 			}
 		}
 		if (enter) {
 			enter = false;
-			if (options[currentOption] == "novo jogo") {
+			if (options[currentOption] == "continuar") {
 				Game.gameState = "NORMAL";
 				pause = false;
+			} else if (options[currentOption] == "novo jogo") {
+				Game.gameState = "NORMAL";
+				World.restartGame("level1.png");
+				pause = false;
+				currentOption = 0;
 			} else if (options[currentOption] == "sair") {
 				System.exit(1);
 			}
@@ -54,32 +83,44 @@ public class Menu {
 		// Opções de menu
 		g.setColor(Color.white);
 		g.setFont(new Font("arial", Font.BOLD, 24));
-		if (!pause) {
-			g.drawString("Novo Jogo", (Game.WIDTH * Game.SCALE) / 2 - 50, 160);
-		} else {
+		if (pause) {
 			g.drawString("Continuar", (Game.WIDTH * Game.SCALE) / 2 - 50, 160);
-		}
-		
-		g.drawString("Carregar Jogo", (Game.WIDTH * Game.SCALE) / 2 - 70, 200);
-		g.drawString("Sair", (Game.WIDTH * Game.SCALE) / 2 - 10, 240);
-		g.setColor(Color.blue);
-		if (options[currentOption] == "novo jogo") {
-			if (pause) {
-				g.drawString(">", (Game.WIDTH * Game.SCALE) / 2 - 65, 160);
-				g.drawString("<", (Game.WIDTH * Game.SCALE) / 2 + 65, 160);
-				return;
-			}
-			g.drawString(">", (Game.WIDTH * Game.SCALE) / 2 - 65, 160);
-			g.drawString("<", (Game.WIDTH * Game.SCALE) / 2 + 76, 160);
-			
-		} else if (options[currentOption] == "carregar jogo") {
-			g.drawString(">", (Game.WIDTH * Game.SCALE) / 2 - 86, 200);
-			g.drawString("<", (Game.WIDTH * Game.SCALE) / 2 + 93, 200);
-		} else if (options[currentOption] == "sair") {
-			g.drawString(">", (Game.WIDTH * Game.SCALE) / 2 - 25, 240);
-			g.drawString("<", (Game.WIDTH * Game.SCALE) / 2 + 37, 240);
+			g.drawString("Novo Jogo", (Game.WIDTH * Game.SCALE) / 2 - 50, 190);
+			g.drawString("Carregar Jogo", (Game.WIDTH * Game.SCALE) / 2 - 70, 220);
+			g.drawString("Sair", (Game.WIDTH * Game.SCALE) / 2 - 10, 250);
+		} else {
+			g.drawString("Novo Jogo", (Game.WIDTH * Game.SCALE) / 2 - 50, 160);
+			g.drawString("Carregar Jogo", (Game.WIDTH * Game.SCALE) / 2 - 70, 190);
+			g.drawString("Sair", (Game.WIDTH * Game.SCALE) / 2 - 10, 220);
 		}
 
+		g.setColor(Color.blue);
+		if (pause) {
+			if (options[currentOption] == "continuar") {
+				g.drawString(">", (Game.WIDTH * Game.SCALE) / 2 - 65, 160);
+				g.drawString("<", (Game.WIDTH * Game.SCALE) / 2 + 65, 160);
+			} else if (options[currentOption] == "novo jogo") {
+				g.drawString(">", (Game.WIDTH * Game.SCALE) / 2 - 65, 190);
+				g.drawString("<", (Game.WIDTH * Game.SCALE) / 2 + 76, 190);
+			} else if (options[currentOption] == "carregar jogo") {
+				g.drawString(">", (Game.WIDTH * Game.SCALE) / 2 - 86, 220);
+				g.drawString("<", (Game.WIDTH * Game.SCALE) / 2 + 93, 220);
+			} else if (options[currentOption] == "sair") {
+				g.drawString(">", (Game.WIDTH * Game.SCALE) / 2 - 25, 250);
+				g.drawString("<", (Game.WIDTH * Game.SCALE) / 2 + 37, 250);
+			}
+		} else {
+			if (options[currentOption] == "novo jogo") {
+				g.drawString(">", (Game.WIDTH * Game.SCALE) / 2 - 65, 160);
+				g.drawString("<", (Game.WIDTH * Game.SCALE) / 2 + 76, 160);
+			} else if (options[currentOption] == "carregar jogo") {
+				g.drawString(">", (Game.WIDTH * Game.SCALE) / 2 - 86, 190);
+				g.drawString("<", (Game.WIDTH * Game.SCALE) / 2 + 93, 190);
+			} else if (options[currentOption] == "sair") {
+				g.drawString(">", (Game.WIDTH * Game.SCALE) / 2 - 25, 220);
+				g.drawString("<", (Game.WIDTH * Game.SCALE) / 2 + 37, 220);
+			}
+		}
 	}
 
 	public boolean isUp() {

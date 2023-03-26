@@ -17,6 +17,8 @@ public class Sound {
 	public static final Sound bulletPlus = new Sound("/bulletPlus.wav");
 	public static final Sound selectMenu = new Sound("/selectMenu.wav");
 	public static final Sound step = new Sound("/step.wav");
+	public static final Sound withoutAmmo = new Sound("/withoutAmmo.wav");
+	public static final Sound gameOver = new Sound("/gameOver.wav");
 	public Sound(String path) {
 		try {
 			audioClip = Applet.newAudioClip(Sound.class.getResource(path));

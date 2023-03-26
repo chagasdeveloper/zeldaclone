@@ -53,20 +53,20 @@ public class Player extends Entity {
 	public void tick() {
 		// Movimentação
 		moved = false;
-		if (isRight() && World.isFree((int) (x + speed), this.getY())) {
+		if (isRight() && World.isFree((int) (x + speed), this.getY(), 16, 16)) {
 			moved = true;
 			dir = right_dir;
 			x += speed;
-		} else if (isLeft() && World.isFree((int) (x - speed), this.getY())) {
+		} else if (isLeft() && World.isFree((int) (x - speed), this.getY(), 16, 16)) {
 			moved = true;
 			dir = left_dir;
 			x -= speed;
 		}
-		if (isUp() && World.isFree(this.getX(), (int) (y - speed))) {
+		if (isUp() && World.isFree(this.getX(), (int) (y - speed), 16, 16)) {
 			moved = true;
 			dir = up_dir;
 			y -= speed;
-		} else if (isDown() && World.isFree(this.getX(), (int) (y + speed))) {
+		} else if (isDown() && World.isFree(this.getX(), (int) (y + speed), 16, 16)) {
 			moved = true;
 			dir = down_dir;
 			y += speed;
@@ -92,9 +92,9 @@ public class Player extends Entity {
 		}
 		// Sistema de tiro com teclado
 		if (shoot) {
-			Sound.laserShoot.play();
 			shoot = false;
 			if (hasGun && (ammo > 0)) {
+				Sound.laserShoot.play();
 				ammo--;
 				int dx = 0;
 				int dy = 0;
@@ -119,13 +119,16 @@ public class Player extends Entity {
 				}
 				BulletShoot bulletShoot = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
 				Game.bullets.add(bulletShoot);
+			} else {
+				Sound.withoutAmmo.play();
 			}
 		}
 		// Sistema de tiro com mouse
 		if (mouseShoot) {
-			Sound.laserShoot.play();
+
 			mouseShoot = false;
 			if (hasGun && (ammo > 0)) {
+				Sound.laserShoot.play();
 				ammo--;
 				double angle = 0;
 				int px = 0;
@@ -151,12 +154,15 @@ public class Player extends Entity {
 				double dy = Math.sin(angle);
 				BulletShoot bulletShoot = new BulletShoot(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
 				Game.bullets.add(bulletShoot);
+			} else {
+				Sound.withoutAmmo.play();
 			}
 		}
 		// Reinicia game
 		if (life <= 0) {
 			life = 0;
 			Game.gameState = "GAME_OVER";
+			Sound.gameOver.play();
 		}
 		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 16 - Game.WIDTH);
 		Camera.y = Camera.clamp(this.getY() - (Game.HEIGHT / 2), 0, World.HEIGHT * 16 - Game.HEIGHT);

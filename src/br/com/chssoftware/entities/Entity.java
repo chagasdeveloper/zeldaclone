@@ -13,7 +13,7 @@ public class Entity {
 	public static BufferedImage LIFEPACK_EN = Game.spritesheet.getSprite(96, 0, 16, 16);
 	public static BufferedImage WEAPON_EN = Game.spritesheet.getSprite(112, 0, 16, 16);
 	public static BufferedImage BULLET_EN = Game.spritesheet.getSprite(96, 16, 16, 16);
-	public static BufferedImage BULLET_EXPLOSION = Game.spritesheet.getSprite(102, 52, 5, 5);
+	public static BufferedImage BULLET_EXPLOSION = Game.spritesheet.getSprite(102, 51, 5, 5);
 	// enemy
 	public static BufferedImage ENEMY_EN = Game.spritesheet.getSprite(112, 16, 16, 16);
 	public static BufferedImage ENEMY_EN2 = Game.spritesheet.getSprite(128, 16, 16, 16);

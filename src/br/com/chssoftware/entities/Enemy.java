@@ -27,17 +27,17 @@ public class Enemy extends Entity {
 
 	public void tick() {
 		if (!isCollidingWithPlayer()) {
-			if (((int) x < Game.player.getX()) && World.isFree((int) (x + speed), this.getY())
+			if (((int) x < Game.player.getX()) && World.isFree((int) (x + speed), this.getY(), 16, 16)
 					&& !isColliding((int) (x + speed), this.getY())) {
 				x += speed;
-			} else if (((int) x > Game.player.getX()) && World.isFree((int) (x - speed), this.getY())
+			} else if (((int) x > Game.player.getX()) && World.isFree((int) (x - speed), this.getY(), 16, 16)
 					&& !isColliding((int) (x - speed), this.getY())) {
 				x -= speed;
 			}
-			if (((int) y < Game.player.getY()) && World.isFree(this.getX(), (int) (y + speed))
+			if (((int) y < Game.player.getY()) && World.isFree(this.getX(), (int) (y + speed), 16, 16)
 					&& !isColliding(this.getX(), (int) (y + speed))) {
 				y += speed;
-			} else if (((int) y > Game.player.getY()) && World.isFree(this.getX(), (int) (y - speed))
+			} else if (((int) y > Game.player.getY()) && World.isFree(this.getX(), (int) (y - speed), 16, 16)
 					&& !isColliding(this.getX(), (int) (y - speed))) {
 				y -= speed;
 			}
@@ -76,16 +76,15 @@ public class Enemy extends Entity {
 	}
 
 	public void destroySelf() {
-		Sound.explosion.play();
 		Game.entities.remove(this);
 		Game.enemies.remove(this);
+		Sound.explosion.play();
 	}
 
 	public void collidingBullet() {
 		for (int i = 0; i < Game.bullets.size(); i++) {
 			BulletShoot bulletShoot = Game.bullets.get(i);
 			if (Entity.isColliding(bulletShoot, this)) {
-				Sound.shootEnemy.play();
 				life--;
 				isDamaged = true;
 				Game.bullets.remove(bulletShoot);
